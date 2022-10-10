@@ -3,41 +3,41 @@ import ClickAwayListener from '@mui/base/ClickAwayListener';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 export default function List(props) {
+    //title of a list
     const [title, set_title] = useState(props.title)
+    //updating title on every keystroke locally
     const updateTitle = (env) => {
         set_title(env.target.value)
     }
-    useEffect(() => {
-        const keyDownHandler = event => {
-            //console.log('User pressed: ', event.key);
+    //submiting the title to get it updated on storage
+    const submitNewTitle = () => {
+        //preventing empty title
+        if (!title.length) {
+            set_title(props.title)
+        }
+        //submiting new title
+        else {
+            props.updateTitle(props.listId, title)
+        }
+    }
+    //changing textarea height dynamically
+    let list_style_height = {
+        height: `${((Math.floor(title.length / 27) + 1)) * 36}px`
+    }
 
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                console.log(12321)
-                props.updateTitle(props.listId, title);
-            }
-        };
-
-        document.getElementById('updatedTitle').addEventListener('keydown', keyDownHandler);
-
-        return () => {
-            document.getElementById('updatedTitle').removeEventListener('keydown', keyDownHandler);
-        };
-    }, []);
     return (
         <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0'>
             <div className='flex justify-between'>
-                
-                    <ClickAwayListener onClickAway={() => props.updateTitle(props.listId, title)}>
-                        <form action="">
-                        <textarea
-                            id='updatedTitle'
-                            className='overflow-hidden font-karla text-base font-semibold resize-none rounded-md w-56 h-9 bg-transparent outline-none focus:bg-white focus:border-blue-600 focus:border-2 px-2'
-                            value={title} name='title'
-                            onChange={updateTitle}
-                        />
-                        </form>
-                    </ClickAwayListener>
+                <ClickAwayListener onClickAway={submitNewTitle}>
+                    <textarea
+                        id='updatedTitle'
+                        style={list_style_height}
+                        className='overflow-hidden font-karla text-base font-semibold resize-none rounded-md w-56 bg-transparent outline-none focus:bg-white focus:border-blue-600 focus:border-2 px-2'
+                        value={title} name='title'
+                        onChange={updateTitle}
+                    />
+
+                </ClickAwayListener>
                 <a href="#">
                     <MoreHorizIcon />
                 </a>

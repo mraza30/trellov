@@ -4,17 +4,23 @@ import CloseIcon from '@mui/icons-material/Close'
 import ClickAwayListener from '@mui/base/ClickAwayListener'
 
 export default function NewList(props) {
+  //to check if user clicked on add list
   const [is_new_list, set_is_new_list] = useState(false)
+  
+  //after addlist is clicked newlisttitle as an input for new list tile
   const [new_list_title, set_new_list_title] = useState("")
-
+  
+  //toggle new list 
   const toggleIsNewList = () => {
     set_is_new_list(prevState => !prevState)
     set_new_list_title("")
   }
-
+  
+  //updating new list title on every key stroke
   const addNewListTitle = env => {
     set_new_list_title(env.target.value)
   }
+
   return (
     <div>
       {!is_new_list ?
