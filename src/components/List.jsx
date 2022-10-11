@@ -39,7 +39,6 @@ export default function List(props) {
     let list_style_height = {
         height: `${((Math.floor(title.length / 27) + 1)) * 36}px`
     }
-
     return (
         <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0'>
 
@@ -59,7 +58,7 @@ export default function List(props) {
                 </a>
             </div>
 
-            {props.listCards.length && props.listCards.map(index => (<Card {...index} key={index.cardId} parentId={props.listId} />))}
+            {props.listCards.length && props.listCards.map(index => (<Card {...index} key={index.cardId} parentId={props.listId} updateCardData={props.updateCardData}/>))}
 
             <div className='w-full'>
                 {
@@ -71,8 +70,9 @@ export default function List(props) {
                             <span className='font-karla'>Add a card</span>
                         </a> :
                         <ClickAwayListener onClickAway={addNewCardTitle}>
-                            <div>
+                            <div className='fadeIn'>
                                 <textarea
+                                autoFocus
                                     id='updatedCardTitle'
                                     className='overflow-hidden font-karla resize-none rounded-md shadow-md w-full h-16 bg-white outline-none focus:border-2 px-2'
                                     value={new_card_title} name='new_card_title'

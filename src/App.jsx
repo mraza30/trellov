@@ -94,10 +94,37 @@ export default function App() {
       return [...updateState]
     })
   }
+
   const clearLocalStorage = () => {
     localStorage.clear()
     localStorageData = null
     set_all_list('')
+  }
+
+  const updateCardData = (parentId, cardId, data) => {
+    if (!data.length) { return }
+    set_all_list(prevState => {
+      const updateState = prevState.map(index => {
+        if (parentId === index.listId) {
+          return {
+            ...index,
+            listCards: index.listCards.map(newPrevState => {
+              if (newPrevState.cardId === cardId) {
+                return {
+                  ...newPrevState,
+                  cardData: data
+                }
+              }
+              return { ...newPrevState }
+            })
+          }
+        }
+        return {
+          ...index
+        }
+      })
+      return [...updateState]
+    })
   }
   //mapping the data lo list need to be rendered
   //const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)
@@ -105,7 +132,7 @@ export default function App() {
     <div id='app'>
       <Navbar clearLocalStorage={clearLocalStorage} />
       <div className='flex items-start p-5 overflow-hidden gap-3 h-full overflow-x-auto'>
-        {all_list && all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)}
+        {all_list && all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} updateCardData={updateCardData} />)}
         <NewList addNewlistTitle={addNewlistTitle} />
       </div>
     </div>
