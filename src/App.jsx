@@ -4,9 +4,28 @@ import NewList from './components/NewList'
 import ScrollContainer from 'react-indiana-drag-scroll'
 
 export default function App() {
+  let localStorageData
+  if (localStorage.getItem('title')) {
+    const localTitleData = localStorage.getItem('title').split(',')
+    let letId = 0
+    localStorageData = localTitleData.map(index => {
+      let letCardId = 0
+      const localCardData = localStorage.getItem(letId + 1).split(',')
+      return {
+        title: index,
+        listId: letId += 1,
+        listCards: localCardData.map(newIndex => {
+          return {
+            cardId: letCardId += 1,
+            cardData: newIndex
+          }
+        })
+      }
+    })
+  }
   //Data for all the list
   //Data should be stored in localstorage---
-  const [all_list, set_all_list] = useState([
+  const [all_list, set_all_list] = useState(localStorageData ? localStorageData : useState([
     {
       title: 'Doing',
       listId: 1,
@@ -14,9 +33,18 @@ export default function App() {
         {
           cardId: 1,
           cardData: 'Building Trellov'
-        }
+        },
       ]
-    },])
+    },]))
+
+  useMemo(() => {
+    if (all_list) {
+      localStorage.setItem('title', all_list.map(index => index.title).join(',').toString())
+      all_list.forEach(index => {
+        localStorage.setItem(index.listId, index.listCards.map(newIndex => newIndex.cardData).join(',').toString())
+      })
+    }
+  }, [all_list])
   // passed as a prop to <NewList> component building new list   
   const addNewlistTitle = (new_list_title) => {
     new_list_title.length ? set_all_list(prevState => (
@@ -49,8 +77,26 @@ export default function App() {
     })
   }
 
+  const addNewCard = (id, newTitle) => {
+    if (!newTitle.length) { return }
+    set_all_list(prevState => {
+      const updateState = prevState.map(index => {
+        if (id === index.listId) {
+          return {
+            ...index,
+            listCards: [...index.listCards, { cardId: index.listCards.length + 1, cardData: newTitle }]
+          }
+        }
+        return {
+          ...index
+        }
+      })
+      return [...updateState]
+    })
+  }
+
   //mapping the data lo list need to be rendered
-  const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} />)
+  const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)
   return (
     <div id='app'>
       <div className='flex items-start p-5 overflow-hidden gap-3 h-full overflow-x-auto'>

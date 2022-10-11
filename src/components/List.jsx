@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import ClickAwayListener from '@mui/base/ClickAwayListener';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
+import Card from './Card';
 
 export default function List(props) {
     //title of a list
     const [title, set_title] = useState(props.title)
+
+    //
+    const [is_new_card, set_is_new_card] = useState(false)
+
+    //
+    const [new_card_title, set_new_card_title] = useState('')
+
     //updating title on every keystroke locally
     const updateTitle = (env) => {
         set_title(env.target.value)
@@ -20,6 +30,11 @@ export default function List(props) {
             props.updateTitle(props.listId, title)
         }
     }
+
+    const addNewCardTitle = () => {
+        set_is_new_card(prevState => !prevState)
+        set_new_card_title('')
+    }
     //changing textarea height dynamically
     let list_style_height = {
         height: `${((Math.floor(title.length / 27) + 1)) * 36}px`
@@ -27,6 +42,7 @@ export default function List(props) {
 
     return (
         <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0'>
+
             <div className='flex justify-between'>
                 <ClickAwayListener onClickAway={submitNewTitle}>
                     <textarea
@@ -38,10 +54,43 @@ export default function List(props) {
                     />
 
                 </ClickAwayListener>
-                <a href="#">
+                <a href='#'>
                     <MoreHorizIcon />
                 </a>
             </div>
+
+            {props.listCards.map(index => (<Card {...index} key={index.cardId} />))}
+
+            <div className='w-full'>
+                {
+                    !is_new_card ?
+                        <a
+                            href="#" className='text-slate-400 w-full block rounded-md hover:bg-slate-300 '
+                            onClick={() => (set_is_new_card(prevState => !prevState))}>
+                            <AddIcon />
+                            <span className='font-karla'>Add a card</span>
+                        </a> :
+                        <ClickAwayListener onClickAway={addNewCardTitle}>
+                            <div>
+                                <textarea
+                                    id='updatedCardTitle'
+                                    className='overflow-hidden font-karla resize-none rounded-md shadow-md w-full h-16 bg-white outline-none focus:border-2 px-2'
+                                    value={new_card_title} name='new_card_title'
+                                    onChange={env => {set_new_card_title(env.target.value)}}
+                                />
+                                <button
+                                    className='bg-blue-600 rounded-md mt-2 px-2 py-1 text-white'
+                                    onClick={() => { props.addNewCard(props.listId, new_card_title); addNewCardTitle() }}>
+                                    Add list
+                                </button>
+                                <a href="#" onClick={addNewCardTitle}>
+                                    <CloseIcon style={{ color: 'rgb(37 99 235)', marginLeft: '7px' }} />
+                                </a>
+                            </div>
+                        </ClickAwayListener>
+                }
+            </div>
+
         </div>
     )
 }

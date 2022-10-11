@@ -28,7 +28,7 @@ export default function NewList(props) {
           className='w-72 bg-slate-400 rounded-md p-2 bg-opacity-70 hover:bg-opacity-50'>
           <a href="#" className='text-white' onClick={toggleIsNewList}>
             <AddIcon />
-            <span className='font-karla text-base font-semibold'>Add another list</span>
+            <span className='font-karla font-semibold'>Add another list</span>
           </a>
         </div> :
         <ClickAwayListener onClickAway={toggleIsNewList}>
