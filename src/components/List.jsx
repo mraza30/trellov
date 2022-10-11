@@ -15,6 +15,8 @@ export default function List(props) {
     //
     const [new_card_title, set_new_card_title] = useState('')
 
+    const [show_option_box, set_show_option_box] = useState(false)
+
     //updating title on every keystroke locally
     const updateTitle = (env) => {
         set_title(env.target.value)
@@ -40,7 +42,7 @@ export default function List(props) {
         height: `${((Math.floor(title.length / 27) + 1)) * 36}px`
     }
     return (
-        <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0'>
+        <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0 relative'>
 
             <div className='flex justify-between'>
                 <ClickAwayListener onClickAway={submitNewTitle}>
@@ -53,12 +55,14 @@ export default function List(props) {
                     />
 
                 </ClickAwayListener>
-                <a href='#'>
+                <a href='#' onClick={()=>(set_show_option_box(true))}>
                     <MoreHorizIcon />
                 </a>
             </div>
+            <div>
+                {props.listCards.length && props.listCards.map(index => (<Card {...index} key={index.cardId} parentId={props.listId} updateCardData={props.updateCardData} />))}
+            </div>
 
-            {props.listCards.length && props.listCards.map(index => (<Card {...index} key={index.cardId} parentId={props.listId} updateCardData={props.updateCardData}/>))}
 
             <div className='w-full'>
                 {
@@ -72,11 +76,11 @@ export default function List(props) {
                         <ClickAwayListener onClickAway={addNewCardTitle}>
                             <div className='fadeIn'>
                                 <textarea
-                                autoFocus
+                                    autoFocus
                                     id='updatedCardTitle'
                                     className='overflow-hidden font-karla resize-none rounded-md shadow-md w-full h-16 bg-white outline-none focus:border-2 px-2'
                                     value={new_card_title} name='new_card_title'
-                                    onChange={env => {set_new_card_title(env.target.value)}}
+                                    onChange={env => { set_new_card_title(env.target.value) }}
                                 />
                                 <button
                                     className='bg-blue-600 rounded-md mt-2 px-2 py-1 text-white'
@@ -90,7 +94,15 @@ export default function List(props) {
                         </ClickAwayListener>
                 }
             </div>
-
+            {show_option_box &&
+            <ClickAwayListener onClickAway={()=>(set_show_option_box(false))}>
+                    <div className='bg-white shadow-2xl w-52 absolute rounded-md top-3 -right-40 font-karla py-2 z-10'>
+                        <h1 className='text-center text-slate-500'>List actions </h1>
+                        <hr className='border-2 m-2'/>
+                        <a href="#" className='px-2'>Delete list...</a>
+                    </div> 
+            </ClickAwayListener>
+            }
         </div>
     )
 }

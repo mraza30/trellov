@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
+
 export default function Card(props) {
   const [is_card_hover, set_is_card_hover] = useState(false)
   const [card_data, set_card_data] = useState(props.cardData)
@@ -8,8 +9,8 @@ export default function Card(props) {
   useEffect(() => {
     let el = document.getElementById(`${props.cardId}${props.parentId}`)
     if (el) {
-      el.addEventListener('pointerenter', () => set_is_card_hover(true))
-      el.addEventListener('pointerleave', () => set_is_card_hover(false))
+      el.addEventListener('mouseover', () => set_is_card_hover(true))
+      el.addEventListener('mouseout', () => set_is_card_hover(false))
     }
     return () => {
       el.removeEventListener('mouseover', () => set_is_card_hover(true))

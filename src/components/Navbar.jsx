@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function Navbar(props) {
     return (
-        <div className='w-full bg-blue-700 bg-opacity-40 shadow-md h-16 font-karla text-white px-4 flex items-center justify-between'>
+        <div className='w-full bg-blue-700 bg-opacity-70 shadow-xl h-16 font-karla text-white px-4 flex items-center justify-between'>
             <h1 className='font-bold text-xl'>Trellov</h1>
             <button
                 onClick={props.clearLocalStorage}

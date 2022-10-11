@@ -131,7 +131,7 @@ export default function App() {
   return (
     <div id='app'>
       <Navbar clearLocalStorage={clearLocalStorage} />
-      <div className='flex items-start p-5 overflow-hidden gap-3 h-full overflow-x-auto'>
+      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{height:'90.3%'}}>
         {all_list && all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} updateCardData={updateCardData} />)}
         <NewList addNewlistTitle={addNewlistTitle} />
       </div>
