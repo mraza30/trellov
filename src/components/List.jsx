@@ -59,7 +59,7 @@ export default function List(props) {
                 </a>
             </div>
 
-            {props.listCards.map(index => (<Card {...index} key={index.cardId} />))}
+            {props.listCards.length && props.listCards.map(index => (<Card {...index} key={index.cardId} parentId={props.listId} />))}
 
             <div className='w-full'>
                 {

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import List from './components/List'
 import NewList from './components/NewList'
-import ScrollContainer from 'react-indiana-drag-scroll'
 
 export default function App() {
   let localStorageData
@@ -37,7 +36,7 @@ export default function App() {
       ]
     },])
 
-  useMemo(() => {
+  useEffect(() => {
     if (all_list) {
       localStorage.setItem('title', all_list.map(index => index.title).join(',').toString())
       all_list.forEach(index => {
