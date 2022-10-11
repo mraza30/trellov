@@ -5,7 +5,7 @@ import ScrollContainer from 'react-indiana-drag-scroll'
 
 export default function App() {
   let localStorageData
-  if (localStorage.getItem('title')) {
+  if (localStorage.getItem('title') != null) {
     const localTitleData = localStorage.getItem('title').split(',')
     let letId = 0
     localStorageData = localTitleData.map(index => {
@@ -25,7 +25,7 @@ export default function App() {
   }
   //Data for all the list
   //Data should be stored in localstorage---
-  const [all_list, set_all_list] = useState(localStorageData ? localStorageData : useState([
+  const [all_list, set_all_list] = useState(localStorageData ? localStorageData : [
     {
       title: 'Doing',
       listId: 1,
@@ -35,7 +35,7 @@ export default function App() {
           cardData: 'Building Trellov'
         },
       ]
-    },]))
+    },])
 
   useMemo(() => {
     if (all_list) {
