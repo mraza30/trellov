@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import List from './components/List'
+import Navbar from './components/Navbar'
 import NewList from './components/NewList'
 
 export default function App() {
@@ -93,13 +94,18 @@ export default function App() {
       return [...updateState]
     })
   }
-
+  const clearLocalStorage = () => {
+    localStorage.clear()
+    localStorageData = null
+    set_all_list('')
+  }
   //mapping the data lo list need to be rendered
-  const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)
+  //const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)
   return (
     <div id='app'>
+      <Navbar clearLocalStorage={clearLocalStorage} />
       <div className='flex items-start p-5 overflow-hidden gap-3 h-full overflow-x-auto'>
-        {mapList}
+        {all_list && all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)}
         <NewList addNewlistTitle={addNewlistTitle} />
       </div>
     </div>
