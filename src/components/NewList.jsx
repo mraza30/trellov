@@ -4,31 +4,27 @@ import CloseIcon from '@mui/icons-material/Close'
 import ClickAwayListener from '@mui/base/ClickAwayListener'
 
 export default function NewList(props) {
-  //to check if user clicked on add list
-  const [is_new_list, set_is_new_list] = useState(false)
 
-  //after addlist is clicked newlisttitle as an input for new list tile
-  const [new_list_title, set_new_list_title] = useState("")
+  const [makeNewList, setMakeNewList] = useState(false)
 
-  //toggle new list 
+  const [newListTitle, setNewListTitle] = useState("")
+
+
   const toggleIsNewList = () => {
-    set_is_new_list(prevState => !prevState)
-    set_new_list_title("")
+    setMakeNewList(prevState => !prevState)
+    setNewListTitle("")
   }
 
-  //updating new list title on every key stroke
-  const addNewListTitle = env => {
-    set_new_list_title(env.target.value)
-  }
 
   return (
-    <div>
-      {!is_new_list ?
-        <div
-          className='w-72 bg-slate-400 rounded-md p-2 bg-opacity-70 hover:bg-opacity-50'>
+    <div className='font-karla'>
+      {!makeNewList ?
+        <div className='w-72 bg-slate-400 rounded-md p-2 bg-opacity-70 hover:bg-opacity-50'>
           <a href="#" className='text-white' onClick={toggleIsNewList}>
             <AddIcon />
-            <span className='font-karla font-semibold'>Add another list</span>
+            <span className='font-semibold'>
+              Add another list
+            </span>
           </a>
         </div> :
         <ClickAwayListener onClickAway={toggleIsNewList}>
@@ -37,11 +33,11 @@ export default function NewList(props) {
               autoFocus
               type="text" placeholder='Enter list title...'
               className='w-full px-2 h-9 outline-none border-blue-600 border-2 rounded-md'
-              value={new_list_title} onChange={addNewListTitle} />
+              value={newListTitle} onChange={env => setNewListTitle(env.target.value)} />
 
             <button
               className='bg-blue-600 rounded-md mt-2 px-2 py-1 text-white'
-              onClick={() => { props.addNewlistTitle(new_list_title); toggleIsNewList() }}>
+              onClick={() => { props.addNewList(newListTitle); toggleIsNewList() }}>
               Add list
             </button>
             <a href="#" onClick={toggleIsNewList}>

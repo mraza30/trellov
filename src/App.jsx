@@ -1,139 +1,116 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { ConstructionOutlined } from '@mui/icons-material'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import List from './components/List'
 import Navbar from './components/Navbar'
 import NewList from './components/NewList'
 
 export default function App() {
-  let localStorageData
-  if (localStorage.getItem('title') != null) {
-    const localTitleData = localStorage.getItem('title').split(',')
-    let letId = 0
-    localStorageData = localTitleData.map(index => {
-      let letCardId = 0
-      const localCardData = localStorage.getItem(letId + 1).split(',')
-      return {
-        title: index,
-        listId: letId += 1,
-        listCards: localCardData.map(newIndex => {
-          return {
-            cardId: letCardId += 1,
-            cardData: newIndex
-          }
-        })
-      }
-    })
-  }
-  //Data for all the list
-  //Data should be stored in localstorage---
-  const [all_list, set_all_list] = useState(localStorageData ? localStorageData : [
-    {
-      title: 'Doing',
-      listId: 1,
-      listCards: [
-        {
-          cardId: 1,
-          cardData: 'Building Trellov'
-        },
-      ]
-    },])
-
+  const [lists_array, set_lists_array] = useState([])
   useEffect(() => {
-    if (all_list) {
-      localStorage.setItem('title', all_list.map(index => index.title).join(',').toString())
-      all_list.forEach(index => {
-        localStorage.setItem(index.listId, index.listCards.map(newIndex => newIndex.cardData).join(',').toString())
+    if (localStorage.getItem('listTitlesString')) {
+      const localTitlesArray = localStorage.getItem('listTitlesString').split(',')
+      let listId = 0
+      const localStorageData = localTitlesArray.map(listTitle => {
+        let cardId = 0
+        const localListCardsArray = localStorage.getItem(listTitle).split(',')
+        return {
+          listTitle: listTitle,
+          listId: listId += 1,
+          listCards: localListCardsArray.map(cardData => {
+            return {
+              cardId: cardId += 1,
+              cardData: cardData
+            }
+          })
+        }
+      })
+      set_lists_array(localStorageData)
+    }
+    else {
+      set_lists_array([
+        {
+          listTitle: 'Doing',
+          listId: 1,
+          listCards: [
+            {
+              cardId: 1,
+              cardData: 'Building Trellov'
+            },
+          ]
+        },])
+    }
+  }, [])
+  useEffect(() => {
+    console.log('ouside')
+    if (lists_array.length) {
+      console.log('inside')
+      localStorage.clear()
+      localStorage.setItem('listTitlesString', lists_array.map(list => list.listTitle).join(',').toString())
+      lists_array.forEach(list => {
+        localStorage.setItem(list.listTitle, list.listCards.map(card => card.cardData).join(',').toString())
       })
     }
-  }, [all_list])
-  // passed as a prop to <NewList> component building new list   
-  const addNewlistTitle = (new_list_title) => {
-    new_list_title.length ? set_all_list(prevState => (
-      [...prevState,
-      {
-        title: new_list_title,
-        listId: all_list.length + 1,
-        listCards: [
-          {
-            cardId: 1,
-            cardData: 'Building Trellov'
-          }
-        ]
-      }])) : alert('Write Something...')
-  }
-  //updating the title of a list passes as a prop to component <List>
-  const updateTitle = (id, newTitle) => {
-    if (!newTitle.length) { return }
-    set_all_list(prevState => {
-      const updateData = prevState.map(index => {
-        if (index.listId === id) {
-          return {
-            ...index,
-            title: newTitle
-          }
+  }, [lists_array])
+
+  const addNewList = newListTitle => {
+    newListTitle.length ? localStorage.getItem(newListTitle) === null
+      ? set_lists_array(prevState => ([
+        ...prevState,
+        {
+          listTitle: newListTitle,
+          listId: prevState.length + 1,
+          listCards: [
+            {
+              cardId: 1,
+              cardData: 'Building Trellov'
+            },
+          ]
         }
-        return { ...index }
-      })
-      return [...updateData]
-    })
+      ]))
+      : alert('List already created....')
+      : alert('Write Something....')
   }
 
-  const addNewCard = (id, newTitle) => {
-    if (!newTitle.length) { return }
-    set_all_list(prevState => {
-      const updateState = prevState.map(index => {
-        if (id === index.listId) {
-          return {
-            ...index,
-            listCards: [...index.listCards, { cardId: index.listCards.length + 1, cardData: newTitle }]
+  const updateListTitle = (oldListTitle, newListTitle) => {
+    newListTitle.length ? localStorage.getItem(newListTitle) === null
+      ? set_lists_array(prevState => {
+        const updatedState = prevState.map(list => {
+          if (list.listTitle === oldListTitle) {
+            return { ...list, listTitle: newListTitle }
           }
-        }
-        return {
-          ...index
-        }
+          return { ...list }
+        })
+        return [...updatedState]
       })
-      return [...updateState]
+      : undefined : undefined
+  }
+
+  const deleteList = listTitle => {
+    set_lists_array(prevState => {
+      let newListId=0
+      const updatedState = prevState.filter(list => {
+        if (list.listTitle === listTitle) { return }
+        return ({ ...list})
+      })
+      const updatedListId = updatedState.map(list => ({...list, listId: newListId += 1}))
+      return [...updatedListId]
     })
   }
 
   const clearLocalStorage = () => {
     localStorage.clear()
-    localStorageData = null
-    set_all_list('')
+    set_lists_array('')
   }
 
-  const updateCardData = (parentId, cardId, data) => {
-    if (!data.length) { return }
-    set_all_list(prevState => {
-      const updateState = prevState.map(index => {
-        if (parentId === index.listId) {
-          return {
-            ...index,
-            listCards: index.listCards.map(newPrevState => {
-              if (newPrevState.cardId === cardId) {
-                return {
-                  ...newPrevState,
-                  cardData: data
-                }
-              }
-              return { ...newPrevState }
-            })
-          }
-        }
-        return {
-          ...index
-        }
-      })
-      return [...updateState]
-    })
-  }
-  //mapping the data lo list need to be rendered
-  //const mapList = all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} />)
   return (
     <div id='app'>
       <Navbar clearLocalStorage={clearLocalStorage} />
-      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{height:'90.3%'}}>
-        {all_list && all_list.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} updateCardData={updateCardData} />)}
-        <NewList addNewlistTitle={addNewlistTitle} />
+      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.3%' }}>
+        {lists_array.length ?
+          lists_array.map(list => (<List {...list} key={list.listTitle} updateListTitle={updateListTitle} deleteList={deleteList} />))
+          : undefined}
+        {/* {lists_array && lists_array.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} updateCardData={updateCardData} deleteList={deleteList} />)} */}
+        <NewList addNewList={addNewList} />
       </div>
     </div>
   )
