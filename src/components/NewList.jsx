@@ -18,16 +18,16 @@ export default function NewList(props) {
 
   return (
     <div className='font-karla'>
-      {!makeNewList ?
-        <div className='w-72 bg-slate-400 rounded-md p-2 bg-opacity-70 hover:bg-opacity-50'>
+      {!makeNewList
+        ? <div className='w-72 bg-slate-400 rounded-md p-2 bg-opacity-70 hover:bg-opacity-50'>
           <a href="#" className='text-white' onClick={toggleIsNewList}>
             <AddIcon />
             <span className='font-semibold'>
               Add another list
             </span>
           </a>
-        </div> :
-        <ClickAwayListener onClickAway={toggleIsNewList}>
+        </div>
+        : <ClickAwayListener onClickAway={toggleIsNewList}>
           <div className='w-72 bg-slate-100 p-2 rounded-md fadeIn'>
             <input
               autoFocus

@@ -1,12 +1,15 @@
-import { ConstructionOutlined } from '@mui/icons-material'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import List from './components/List'
 import Navbar from './components/Navbar'
 import NewList from './components/NewList'
+import { cardUpdateContext } from './components/Context'
+
 
 export default function App() {
   const [lists_array, set_lists_array] = useState([])
+
   useEffect(() => {
+
     if (localStorage.getItem('listTitlesString')) {
       const localTitlesArray = localStorage.getItem('listTitlesString').split(',')
       let listId = 0
@@ -26,6 +29,7 @@ export default function App() {
       })
       set_lists_array(localStorageData)
     }
+
     else {
       set_lists_array([
         {
@@ -39,9 +43,11 @@ export default function App() {
           ]
         },])
     }
+
   }, [])
+
   useEffect(() => {
-    console.log('ouside')
+    console.log('outside')
     if (lists_array.length) {
       console.log('inside')
       localStorage.clear()
@@ -86,14 +92,55 @@ export default function App() {
   }
 
   const deleteList = listTitle => {
+    if (lists_array.length === 1) {
+      clearLocalStorage();
+      return
+    }
     set_lists_array(prevState => {
-      let newListId=0
+      let newListId = 0
       const updatedState = prevState.filter(list => {
         if (list.listTitle === listTitle) { return }
-        return ({ ...list})
+        return ({ ...list })
       })
-      const updatedListId = updatedState.map(list => ({...list, listId: newListId += 1}))
+      const updatedListId = updatedState.map(list => ({ ...list, listId: newListId += 1 }))
       return [...updatedListId]
+    })
+  }
+
+  const addNewCard = (listTitle, cardData) => {
+    if (!cardData.length) { return }
+    set_lists_array(prevState => {
+      const updatedState = prevState.map(list => {
+        if (listTitle === list.listTitle) {
+          return {
+            ...list,
+            listCards: [...list.listCards, { cardId: list.listCards.length + 1, cardData: cardData }]
+          }
+        }
+        return { ...list }
+      })
+      return [...updatedState]
+    })
+  }
+
+  const updateCardData = (parentTitle, cardId, newData) => {
+    if (!newData.length) { return }
+    set_lists_array(prevState => {
+      const updatedState = prevState.map(list => {
+        if (parentTitle === list.listTitle) {
+          return {
+            ...list,
+            listCards: list.listCards.map(card => {
+              if (card.cardId === cardId) {
+                return { ...card, cardData: newData }
+              }
+              return { ...card }
+            })
+          }
+        }
+        return { ...list }
+      })
+      return [...updatedState]
     })
   }
 
@@ -104,14 +151,28 @@ export default function App() {
 
   return (
     <div id='app'>
+
       <Navbar clearLocalStorage={clearLocalStorage} />
+
       <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.3%' }}>
-        {lists_array.length ?
-          lists_array.map(list => (<List {...list} key={list.listTitle} updateListTitle={updateListTitle} deleteList={deleteList} />))
-          : undefined}
-        {/* {lists_array && lists_array.map(index => <List {...index} key={index.listId} updateTitle={updateTitle} addNewCard={addNewCard} updateCardData={updateCardData} deleteList={deleteList} />)} */}
+
+        <cardUpdateContext.Provider value={updateCardData}>
+
+          {lists_array.length
+            ? lists_array.map(list => (<List
+              {...list}
+              key={list.listTitle}
+              updateListTitle={updateListTitle}
+              deleteList={deleteList}
+              addNewCard={addNewCard} />))
+            : undefined}
+
+        </cardUpdateContext.Provider>
+
         <NewList addNewList={addNewList} />
+      
       </div>
+    
     </div>
   )
 }
