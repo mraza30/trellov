@@ -140,3 +140,32 @@
                         </ClickAwayListener>
                 }
             </div>
+
+
+            {/* <div className='w-full'>
+                {!addNewCard
+                    ? <a
+                        href="#" className='text-slate-400 w-full block rounded-md hover:bg-slate-300 '
+                        onClick={() => (setAddNewCard(true))}>
+                        <AddIcon />
+                        <span className='font-karla'>Add a card</span>
+                    </a> :
+                    <ClickAwayListener onClickAway={() => (setAddNewCard(false))}>
+                        <div className='fadeIn'>
+                            <textarea
+                                autoFocus
+                                className='overflow-hidden font-karla resize-none rounded-md shadow-md w-full h-16 bg-white outline-none focus:border-2 px-2'
+                                value={new_card_title} name='new_card_title'
+                                onChange={env => { set_new_card_title(env.target.value) }}
+                            />
+                            <button
+                                className='bg-blue-600 rounded-md mt-2 px-2 py-1 text-white'
+                                onClick={() => { props.addNewCard(props.listId, new_card_title); addNewCardTitle() }}>
+                                Add list
+                            </button>
+                            <a href="#" onClick={addNewCardTitle}>
+                                <CloseIcon style={{ color: 'rgb(37 99 235)', marginLeft: '7px' }} />
+                            </a>
+                        </div>
+                    </ClickAwayListener>
+                } */}
