@@ -6,7 +6,6 @@ import CloseIcon from '@mui/icons-material/Close'
 import Card from './Card';
 
 export default function List(props) {
-
     const [thisListTitle, setThisListTitle] = useState(props.listTitle)
 
     const [changeListTitle, setChangeListTitle] = useState(false)
@@ -26,9 +25,27 @@ export default function List(props) {
         }
     }
 
+    useEffect(() => {
+        const listElement = document.getElementById(props.listId)
+        function dragStarted() {
+            listElement.style.display = 'none'
+        }
+        function dragEnded() {
+            listElement.style.display = 'initial'
+        }
+        if (listElement) {
+            listElement.addEventListener('drag', dragStarted)
+            listElement.addEventListener('dragend', dragEnded)
+        }
+        return () => {
+           listElement.removeEventListener('dragstart', dragStarted)
+            listElement.removeEventListener('dragend', dragEnded)
+        }
+    }, [])
 
     return (
-        <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0 relative font-karla'>
+        <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0 relative font-karla select-none cursor-pointer'
+            draggable={!addNewCard} id={props.listId}>
 
             <div className='flex justify-between items-start'>
 
@@ -42,25 +59,25 @@ export default function List(props) {
                             onChange={env => setThisListTitle(env.target.value)}
                         />
                     </ClickAwayListener>
-                    : <a href="#" onClick={() => setChangeListTitle(true)} className='grow-0'>
+                    : <div role='button' onClick={() => setChangeListTitle(true)} className='grow-0'>
                         <h2 className='font-semibold px-2'>{props.listTitle}</h2>
-                    </a>
+                    </div>
                 }
 
-                <a href='#' onClick={() => setShowOptionBox(true)} >
+                <div role='button' onClick={() => setShowOptionBox(true)} >
                     <MoreHorizIcon />
-                </a>
+                </div>
 
             </div>
 
             {showOptionBox
-                && <ClickAwayListener onClickAway={() => (setShowOptionBox(false))}>
+                && <ClickAwayListener onClickAway={() => { setShowOptionBox(false); console.log('hello') }}>
                     <div className='bg-white shadow-2xl w-52 absolute rounded-md top-3 -right-40 font-karla py-2 z-10'>
                         <h1 className='text-center text-slate-500'>List actions </h1>
                         <hr className='border-2 m-2' />
-                        <a href="#" className='px-2 hover:bg-slate-300 block'
+                        <div role='button' className='px-2 hover:bg-slate-300 block'
                             onClick={() => props.deleteList(props.listTitle)}
-                        >Delete list...</a>
+                        >Delete list...</div>
                     </div>
                 </ClickAwayListener>
             }
@@ -70,12 +87,12 @@ export default function List(props) {
             <div className='w-full'>
 
                 {!addNewCard
-                    ? <a
-                        href="#" className='text-slate-400 w-full block rounded-md hover:bg-slate-300 '
+                    ? <div role='button'
+                        className='text-slate-400 w-full block rounded-md hover:bg-slate-300 '
                         onClick={() => setAddNewCard(true)}>
                         <AddIcon />
                         <span>Add a card</span>
-                    </a>
+                    </div>
                     : <ClickAwayListener onClickAway={() => { setAddNewCard(false); setNewCardData('') }}>
 
                         <div className='fadeIn'>
@@ -94,16 +111,16 @@ export default function List(props) {
                                 Add list
                             </button>
 
-                            <a href="#" onClick={() => { setAddNewCard(false); setNewCardData('') }}>
+                            <span role='button' onClick={() => { setAddNewCard(false); setNewCardData('') }}>
                                 <CloseIcon style={{ color: 'rgb(37 99 235)', marginLeft: '7px' }} />
-                            </a>
+                            </span>
 
                         </div>
 
                     </ClickAwayListener>
                 }
             </div>
-            
+
         </div>
     )
 }

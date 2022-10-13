@@ -16,8 +16,12 @@ export default function Card(props) {
   useEffect(() => {
 
     const cardElement = document.getElementById(`${props.parentTitle}${props.cardId}`)
-
+    function dragStart() {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     if (cardElement) {
+      cardElement.addEventListener('dragstart', dragStart)
       cardElement.addEventListener('mouseover', () => setIsCardHover(true))
       cardElement.addEventListener('mouseout', () => setIsCardHover(false))
     }
@@ -33,7 +37,7 @@ export default function Card(props) {
     <div
       id={`${props.parentTitle}${props.cardId}`}
       className='bg-white font-karla rounded-md shadow-md my-3 hover:bg-slate-300 relative'
-      draggable='true'>
+      draggable={!isChangeData}>
 
       <h2 className='font-karla p-2'>{props.cardData}</h2>
 
@@ -43,16 +47,16 @@ export default function Card(props) {
       }
 
       {isChangeData
-        && <ClickAwayListener onClickAway={() => {setIsChangeData(false); setThisCardData(props.cardData)}}>
-          
+        && <ClickAwayListener onClickAway={() => { setIsChangeData(false); setThisCardData(props.cardData) }}>
+
           <div className='absolute top-0 z-10 w-full h-20'>
-          
+
             <textarea
               autoFocus
               className='resize-none rounded-md w-full h-full bg-slate-200 p-2 focus:outline-none text-black border-2 border-blue-600'
               value={thisCardData} onChange={env => setThisCardData(env.target.value)}>
             </textarea>
-          
+
             <button
               onClick={() => {
                 thisCardData.length
@@ -64,12 +68,12 @@ export default function Card(props) {
               className='bg-blue-600 rounded-md mt-2 px-3 py-1 text-white'>
               Save
             </button>
-          
+
           </div>
-        
+
         </ClickAwayListener>
       }
-      
+
     </div>
   )
 }
