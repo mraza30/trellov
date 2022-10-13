@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ClickAwayListener from '@mui/base/ClickAwayListener';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import AddIcon from '@mui/icons-material/Add'
@@ -6,6 +6,7 @@ import CloseIcon from '@mui/icons-material/Close'
 import Card from './Card';
 
 export default function List(props) {
+
     const [thisListTitle, setThisListTitle] = useState(props.listTitle)
 
     const [changeListTitle, setChangeListTitle] = useState(false)
@@ -25,27 +26,71 @@ export default function List(props) {
         }
     }
 
+
+    const initialDrag = useRef({ top: 0, left: 0 })
+
+    const whenDragStart = env => {
+        initialDrag.current.top = env.pageY
+        initialDrag.current.left = env.pageX
+        env.currentTarget.classList.add('dragging')
+        const dragIcon = document.createElement('img');
+        env.dataTransfer.setDragImage(dragIcon, 0, 0);
+    }
+
+    const whenDragging = env => {
+
+        env.currentTarget.style.left = ((env.pageX - initialDrag.current.left)) + 'px'
+        env.currentTarget.style.top = ((env.pageY - initialDrag.current.top)) + 'px'
+    }
+
+    const whenDragEnd = env => {
+        env.currentTarget.classList.remove('dragging')
+        env.currentTarget.style.top = 0 + 'px'
+        env.currentTarget.style.left = 0 + 'px'
+    }
+    //event.target.classList.contains('box1')
+    const whenDragEnter = env => {
+
+    }
+
+    const whenDragLeave = env => {
+
+    }
+
+    const whenTouchStart = env => {
+        if (!env.target.closest('.card')) {
+            initialDrag.current.top = env.touches[0].screenY
+            initialDrag.current.left = env.touches[0].screenX
+            env.currentTarget.classList.add('dragging')
+        }
+    }
+    const whenTouchMove = env => {
+        if (!env.target.closest('.card')) {
+        env.currentTarget.style.left = ((env.touches[0].screenX - initialDrag.current.left)) + 'px'
+        env.currentTarget.style.top = ((env.touches[0].screenY - initialDrag.current.top)) + 'px'
+        }
+    }
+
+    const whenTouchEnd = env => {
+        if (!env.target.closest('.card')) {
+        env.currentTarget.classList.remove('dragging')
+        env.currentTarget.style.top = 0 + 'px'
+        env.currentTarget.style.left = 0 + 'px'
+        }
+    }
     useEffect(() => {
-        const listElement = document.getElementById(props.listId)
-        function dragStarted() {
-            listElement.style.display = 'none'
-        }
-        function dragEnded() {
-            listElement.style.display = 'initial'
-        }
-        if (listElement) {
-            listElement.addEventListener('drag', dragStarted)
-            listElement.addEventListener('dragend', dragEnded)
-        }
-        return () => {
-           listElement.removeEventListener('dragstart', dragStarted)
-            listElement.removeEventListener('dragend', dragEnded)
-        }
+
     }, [])
 
     return (
-        <div className='w-72 p-3 bg-slate-100 rounded-md shrink-0 relative font-karla select-none cursor-pointer'
-            draggable={!addNewCard} id={props.listId}>
+        <div className='w-72 p-3 top bg-slate-100 rounded-md shrink-0 relative font-karla select-none cursor-pointer flexListItems'
+            style={{ order: props.Id }}
+            draggable={!addNewCard} id={props.listId}
+            onDragStart={whenDragStart} onTouchStart={whenTouchStart}
+            onDrag={whenDragging} onTouchMove={whenTouchMove}
+            onDragEnd={whenDragEnd} onTouchEnd={whenTouchEnd}
+            onDragEnter={whenDragEnter}
+            onDragLeave={whenDragLeave}>
 
             <div className='flex justify-between items-start'>
 
@@ -72,7 +117,7 @@ export default function List(props) {
 
             {showOptionBox
                 && <ClickAwayListener onClickAway={() => { setShowOptionBox(false); console.log('hello') }}>
-                    <div className='bg-white shadow-2xl w-52 absolute rounded-md top-3 -right-40 font-karla py-2 z-10'>
+                    <div className='bg-white shadow-2xl w-52 absolute rounded-md top-3 -right-40 font-karla py-2 z-50'>
                         <h1 className='text-center text-slate-500'>List actions </h1>
                         <hr className='border-2 m-2' />
                         <div role='button' className='px-2 hover:bg-slate-300 block'

@@ -16,6 +16,7 @@ export default function Card(props) {
   useEffect(() => {
 
     const cardElement = document.getElementById(`${props.parentTitle}${props.cardId}`)
+    cardElement.classList.add('card')
     function dragStart() {
       event.preventDefault();
       event.stopPropagation();

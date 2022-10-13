@@ -43,3 +43,12 @@ body,
     transform: scaleZ(1);
   }
 }
+
+.dragging {
+  z-index: 10;
+  transform: rotate(5deg);
+}
+
+.dragover {
+  opacity: 0.5
+}

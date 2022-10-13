@@ -150,11 +150,11 @@ export default function App() {
   }
 
   return (
-    <div id='app'>
+    <div id='app' className='relative'>
 
       <Navbar clearLocalStorage={clearLocalStorage} />
 
-      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.3%' }}>
+      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.2%' }}>
 
         <cardUpdateContext.Provider value={updateCardData}>
 
