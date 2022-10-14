@@ -30,54 +30,59 @@ export default function List(props) {
     const initialDrag = useRef({ top: 0, left: 0 })
 
     const whenDragStart = env => {
+        //document.body.style.cursor = 'grabbing';
+        //document.body.addEventListener('dragover', env =>env.preventDefault())
+
         initialDrag.current.top = env.pageY
         initialDrag.current.left = env.pageX
+
         env.currentTarget.classList.add('dragging')
+
         const dragIcon = document.createElement('img');
         env.dataTransfer.setDragImage(dragIcon, 0, 0);
+        env.dataTransfer.setData("text", props.listId);
     }
 
     const whenDragging = env => {
-
         env.currentTarget.style.left = ((env.pageX - initialDrag.current.left)) + 'px'
-        env.currentTarget.style.top = ((env.pageY - initialDrag.current.top)) + 'px'
+        env.currentTarget.style.top = (70+(env.pageY - initialDrag.current.top)) + 'px'
     }
 
     const whenDragEnd = env => {
+        //document.body.removeChild('dragover', env =>env.preventDefault())
+
         env.currentTarget.classList.remove('dragging')
+        
         env.currentTarget.style.top = 0 + 'px'
         env.currentTarget.style.left = 0 + 'px'
+        
+        initialDrag.current.top = 0
     }
     //event.target.classList.contains('box1')
     const whenDragEnter = env => {
 
     }
-
+    const whenDragOver = env => {
+        env.preventDefault();
+        if (!initialDrag.current.top) {
+            env.currentTarget.classList.add('ondragover')
+        }
+    }
     const whenDragLeave = env => {
-
-    }
-
-    const whenTouchStart = env => {
-        if (!env.target.closest('.card')) {
-            initialDrag.current.top = env.touches[0].screenY
-            initialDrag.current.left = env.touches[0].screenX
-            env.currentTarget.classList.add('dragging')
+        if (!initialDrag.current.top) {
+            env.currentTarget.classList.remove('ondragover')
         }
     }
-    const whenTouchMove = env => {
-        if (!env.target.closest('.card')) {
-        env.currentTarget.style.left = ((env.touches[0].screenX - initialDrag.current.left)) + 'px'
-        env.currentTarget.style.top = ((env.touches[0].screenY - initialDrag.current.top)) + 'px'
+    const whenDrop = env => {
+        if (!initialDrag.current.top) {
+            env.preventDefault();
+            console.log(env.dataTransfer.getData("text"))
+            props.changeOrder(env.dataTransfer.getData("text"),props.listId)
+            env.currentTarget.classList.remove('ondragover')
         }
     }
 
-    const whenTouchEnd = env => {
-        if (!env.target.closest('.card')) {
-        env.currentTarget.classList.remove('dragging')
-        env.currentTarget.style.top = 0 + 'px'
-        env.currentTarget.style.left = 0 + 'px'
-        }
-    }
+
     useEffect(() => {
 
     }, [])
@@ -85,12 +90,16 @@ export default function List(props) {
     return (
         <div className='w-72 p-3 top bg-slate-100 rounded-md shrink-0 relative font-karla select-none cursor-pointer flexListItems'
             style={{ order: props.Id }}
-            draggable={!addNewCard} id={props.listId}
-            onDragStart={whenDragStart} onTouchStart={whenTouchStart}
-            onDrag={whenDragging} onTouchMove={whenTouchMove}
-            onDragEnd={whenDragEnd} onTouchEnd={whenTouchEnd}
+            draggable={!addNewCard} id={props.listTitle}
+
+            onDragStart={whenDragStart}
+            onDrag={whenDragging}
+            onDragEnd={whenDragEnd}
+
             onDragEnter={whenDragEnter}
-            onDragLeave={whenDragLeave}>
+            onDragOver={whenDragOver}
+            onDragLeave={whenDragLeave}
+            onDrop={whenDrop}>
 
             <div className='flex justify-between items-start'>
 
@@ -127,7 +136,10 @@ export default function List(props) {
                 </ClickAwayListener>
             }
 
-            {props.listCards.map(card => (<Card {...card} key={card.cardId} parentTitle={props.listTitle} />))}
+            {props.listCards.length 
+            ? props.listCards.map(card => (<Card {...card} key={card.cardId} parentTitle={props.listTitle} />)) 
+            : undefined
+            }
 
             <div className='w-full'>
 

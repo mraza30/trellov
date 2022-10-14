@@ -2,29 +2,33 @@ import React, { useEffect, useState } from 'react'
 import List from './components/List'
 import Navbar from './components/Navbar'
 import NewList from './components/NewList'
-import { cardUpdateContext } from './components/Context'
+import { cardUpdateContext, deleteCardContext } from './components/Context'
 
 
 export default function App() {
   const [lists_array, set_lists_array] = useState([])
 
   useEffect(() => {
-
+    document.getElementById('app').addEventListener('dragover', env => env.preventDefault())
     if (localStorage.getItem('listTitlesString')) {
       const localTitlesArray = localStorage.getItem('listTitlesString').split(',')
       let listId = 0
       const localStorageData = localTitlesArray.map(listTitle => {
         let cardId = 0
-        const localListCardsArray = localStorage.getItem(listTitle).split(',')
+        if (localStorage.getItem(listTitle).length) {
+          var localListCardsArray = localStorage.getItem(listTitle).split(',')
+        }
         return {
           listTitle: listTitle,
           listId: listId += 1,
-          listCards: localListCardsArray.map(cardData => {
+          listCards: localListCardsArray ?
+          localListCardsArray.map(cardData => {
             return {
               cardId: cardId += 1,
               cardData: cardData
             }
           })
+          : []
         }
       })
       set_lists_array(localStorageData)
@@ -144,35 +148,71 @@ export default function App() {
     })
   }
 
+  const deleteCard = (parentTitle, cardId) => {
+    set_lists_array(prevState => {
+      const updatedState = prevState.map(list => {
+        if (list.listTitle === parentTitle) {
+          const updatedList = {
+            ...list,
+            listCards: list.listCards.filter(card => (card.cardId != cardId && { ...card }))
+          }
+          return { ...updatedList }
+        }
+        return { ...list }
+      })
+      console.log(updatedState)
+      return [...updatedState]
+    })
+  }
+
   const clearLocalStorage = () => {
     localStorage.clear()
     set_lists_array('')
   }
+
+  const changeOrder = (listA, listB) => {
+    set_lists_array(prevState => {
+      let updatedState = prevState.map(list => list)
+      let b = { ...updatedState[listA - 1], listId: listB }
+      updatedState[listA - 1] = { ...updatedState[listB - 1], listId: listA }
+      updatedState[listB - 1] = b
+
+      console.log(updatedState)
+      return [...updatedState]
+    })
+  }
+
 
   return (
     <div id='app' className='relative'>
 
       <Navbar clearLocalStorage={clearLocalStorage} />
 
-      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.2%' }}>
+      <div className='flex items-start p-5 gap-3 overflow-x-scroll' style={{ height: '90.2%' }} id="scrollable">
 
-        <cardUpdateContext.Provider value={updateCardData}>
+        <deleteCardContext.Provider value={deleteCard}>
 
-          {lists_array.length
-            ? lists_array.map(list => (<List
-              {...list}
-              key={list.listTitle}
-              updateListTitle={updateListTitle}
-              deleteList={deleteList}
-              addNewCard={addNewCard} />))
-            : undefined}
+          <cardUpdateContext.Provider value={updateCardData}>
 
-        </cardUpdateContext.Provider>
+            {lists_array.length
+              ? lists_array.map(list => (<List
+                {...list}
+                key={list.listTitle}
+                updateListTitle={updateListTitle}
+                deleteList={deleteList}
+                addNewCard={addNewCard}
+                changeOrder={changeOrder}
+                style={{ order: list.listId }} />))
+              : undefined}
+
+          </cardUpdateContext.Provider>
+
+        </deleteCardContext.Provider>
 
         <NewList addNewList={addNewList} />
-      
+
       </div>
-    
+
     </div>
   )
 }

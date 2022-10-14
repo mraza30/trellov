@@ -3,6 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 * {
   box-sizing: border-box;
 }
@@ -46,9 +47,10 @@ body,
 
 .dragging {
   z-index: 10;
-  transform: rotate(5deg);
+  transform: rotate(10deg);
+  
 }
 
-.dragover {
-  opacity: 0.5
+.ondragover {
+  opacity: 0.7 ;
 }

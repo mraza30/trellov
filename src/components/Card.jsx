@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
-import { cardUpdateContext } from './Context'
+import { cardUpdateContext, deleteCardContext } from './Context'
 
 export default function Card(props) {
 
   const updateCardData = useContext(cardUpdateContext)
+  const deleteCard = useContext(deleteCardContext)
 
   const [thisCardData, setThisCardData] = useState(props.cardData)
 
@@ -70,6 +71,15 @@ export default function Card(props) {
               Save
             </button>
 
+            <button
+              onClick={() => {
+                deleteCard(props.parentTitle, props.cardId)
+                ; setIsChangeData(false)
+                ; setIsCardHover(false)
+              }}
+              className='bg-red-500 rounded-md mt-2 ml-2 px-3 py-1 text-white'>
+              Delete
+            </button>
           </div>
 
         </ClickAwayListener>
